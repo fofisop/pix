@@ -1,1 +1,1 @@
-# pix
+I wanted a really simple free pixel art maker for my future projects and games, but I couldn't really find one that I liked. So I decided to make one! I looked up some tutorials to use(though I am putting my own twists in it) and got to work!
