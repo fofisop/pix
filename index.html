@@ -1,70 +1,176 @@
 <html>
 <head>
-  <style>
-  #pixelCanvas {
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  td{
-    width: 25px;
-    height: 25px;
-    border: 1px solid #ddd;
-    cursor: pointer;
+<style>
+#pixelCanvas {
+border-collapse: collapse;
+margin-top: 20px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+margin-bottom: 20px;
+background-color: #ffff;
 
-  }
-  </style>
+}
+td{
+width: 25px;
+height: 25px;
+border: 1px solid #ddd;
+cursor: pointer;
 
+}
+body.full-mode #pixelCanvas {
+width: 100vmin;
+height: 100vmin;
+margin: 0;
+
+object-fit: contain;
+max-width: 100%;
+max-height: 100%;
+}
+body.full-mode td {
+width: 1%;
+
+height: auto;
+}
+.no-grid td {
+border: none;
+}
+body.full-mode .controls {
+    display: none;
+}
+input[type="color"] { 
+    border: none; 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    background: none; 
+    padding: 0;
+}
+input[type="number"] {
+    width: 55px;
+    padding: 8px 4px
+     padding: 8px 4px;
+    border: 1px solid #ffccd5;
+    border-radius: 15px; 
+    text-align: center;
+    font-weight: 600;
+}
+body.full-mode  {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+margin: 0;
+overflow: hidden;
+}
+.controls {
+display: flex;
+gap: 12px ;
+padding: 12px 24px; 
+border-radius: 50px; 
+box-shadow: 0 10px 25px rgba(0, 128, 128, 0.08);
+align-items: center;
+border: 1px solid #ffccd5;
+}
+button{
+background: #e6f7f7;
+border: 1px solid #008080;
+padding: 10px 20px; 
+border-radius: 25px; 
+font-weight: 600; 
+color: #004d4d; 
+  cursor: pointer; 
+transition: all 0.2s ease; 
+box-shadow: 0 2px 4px rgba(0, 128, 128, 0.05);
+}
+button:hover { 
+background: #ffb6c1;
+ transform: translateY(-1px); 
+    box-shadow: 0 4px 8px rgba(255, 133, 152, 0.2);
+    color: #ffffff;
+}
+body{
+background-color: #fff0f3;
+}
+button:active { 
+    transform: translateY(1px); 
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); 
+} 
+</style>
 </head>
 <body>
- 
-    <div class="controls">
-  <input type="color" id="colorPicker">
-   <input type="number" id="inputWidth" value="10">
-  <input type="number" id="inputHeight" value="10">
-   <button id="sizePicker">Create Grid</button>
-   <button id="eraserBtn">Eraser: OFF</button>
-  </div>
-  <table id="pixelCanvas"></table>
- 
-    <script>
-    let mouseIsDown = false;
-    window.onmousedown = () => mouseIsDown = true;
+
+<table id="pixelCanvas"></table>
+<div class="controls">
+<input type="color" id="colorPicker">
+<input type="number" id="inputWidth" value="10">
+<input type="number" id="inputHeight" value="10">
+<button id="sizePicker">Create Grid</button>
+<button id="eraserBtn">Eraser: OFF</button>
+<button id="gridBtn">Hide Grid</button>
+<button id="fullBtn">Fullscreen Preview</button>
+
+</div>
+
+<script>
+let mouseIsDown = false;
+window.onmousedown = () => mouseIsDown = true;
 window.onmouseup = () => mouseIsDown = false;
 
 let isEraser = false;  const table = document.getElementById("pixelCanvas");
 const sizePicker = document.getElementById("sizePicker");
 const eraserBtn = document.getElementById("eraserBtn");
-  eraserBtn.onclick = () => {
+eraserBtn.onclick = () => {
 isEraser = !isEraser;
-      eraserBtn.innerText = isEraser ? "Eraser: ON" : "Eraser: OFF";
-  };
+eraserBtn.innerText = isEraser ? "Eraser: ON" : "Eraser: OFF";
+};
 sizePicker.addEventListener('click', function(e){
- 
-  const width = document.getElementById("inputWidth").value;
-  const height = document.getElementById("inputHeight").value;
- 
+
+const width = document.getElementById("inputWidth").value;
+const height = document.getElementById("inputHeight").value;
 
 
 
-  table.innerHTML = "";
-   for (let r = 0; r < height; r++) {
-      let row = table.insertRow();
-    for (let c = 0; c < width; c++) {
-         let cell = row.insertCell();
-          const color = document.getElementById("colorPicker").value;
-         cell.onmouseenter = function() {
-            if (mouseIsDown) {
-                this.style.backgroundColor = isEraser ? "white" : colorPicker.value;
-            }
-        };
-        cell.onclick = function() {
-            this.style.backgroundColor = isEraser ? "white" : colorPicker.value;
-        };
-        }
+
+table.innerHTML = "";
+for (let r = 0; r < height; r++) {
+let row = table.insertRow();
+for (let c = 0; c < width; c++) {
+    let cell = row.insertCell();
+    cell.onmouseenter = function() {
+      if (mouseIsDown) {
+          this.style.backgroundColor = isEraser ? "white" : colorPicker.value;
       }
+  };
+  cell.onclick = function() {
+      this.style.backgroundColor = isEraser ? "white" : colorPicker.value;
+  };
+  }
+}
 
 });
-    </script>
+const gridBtn = document.getElementById("gridBtn");
+gridBtn.onclick = () => {
+table.classList.toggle("no-grid");
+gridBtn.innerText = table.classList.contains("no-grid") ? "Show Grid" : "Hide Grid";
+};
+
+const fullBtn = document.getElementById("fullBtn")
+fullBtn.onclick = (e) => {
+e.stopPropagation();
+table.classList.add("no-grid");
+document.body.classList.add("full-mode");
+};
+window.onclick = () => {
+if (document.body.classList.contains("full-mode")) {
+  document.body.classList.remove("full-mode");
+          if (gridBtn.innerText === "Hide Grid") {
+      table.classList.remove("no-grid");
+  }
+
+}
+};
+
+</script>
 </body>
 </html>
 
