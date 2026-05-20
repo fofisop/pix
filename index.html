@@ -44,11 +44,12 @@ input[type="color"] {
     cursor: pointer; 
     background: none; 
     padding: 0;
+    box-sizing: border-box;
 }
 input[type="number"] {
     width: 55px;
-    padding: 8px 4px
-     padding: 8px 4px;
+    padding: 8px 4px;
+   
     border: 1px solid #ffccd5;
     border-radius: 15px; 
     text-align: center;
@@ -70,6 +71,9 @@ border-radius: 50px;
 box-shadow: 0 10px 25px rgba(0, 128, 128, 0.08);
 align-items: center;
 border: 1px solid #ffccd5;
+max-width: 90vw; 
+flex-wrap: wrap;     
+  justify-content: center;
 }
 button{
 background: #e6f7f7;
@@ -89,7 +93,7 @@ background: #ffb6c1;
     color: #ffffff;
 }
 body{
-background-color: #fff0f3;
+background-color: #fff0f3; flex-direction: column;   justify-content: center;   align-items: center;
 }
 button:active { 
     transform: translateY(1px); 
@@ -114,10 +118,7 @@ button:active {
 <button id="fullBtn">Fullscreen Preview</button>
 <button id="saveGalleryBtn">Save Art</button>
 <button id="viewGalleryBtn">Open Gallery</button>
-
-
 </div>
-
 <script>
 let mouseIsDown = false;
 window.onmousedown = () => mouseIsDown = true;
@@ -147,7 +148,6 @@ for (let c = 0; c < width; c++) {
   };
   }
 }
-
 });
 const gridBtn = document.getElementById("gridBtn");
 gridBtn.onclick = () => {
@@ -178,30 +178,56 @@ const galleryList = document.getElementById("galleryList");
   document.getElementById("saveGalleryBtn").onclick = () => {
     let pastCreations = JSON.parse(localStorage.getItem("mySimpleStudio")) || [];
     let colors = Array.from(table.getElementsByTagName("td")).map(td => td.style.backgroundColor || "white");
+      pastCreations.push({
+        width: document.getElementById("inputWidth").value, 
+        height: document.getElementById("inputHeight").value,
+        colors: colors
+    });
     localStorage.setItem("mySimpleStudio", JSON.stringify(pastCreations));
     alert("Saved successfully!");
-    pastCreations.push({width: document.getElementById("inputWidth").value, height: document.getElementById("inputHeight").value,colors});
-  };
+};
+  
 
     document.getElementById("viewGalleryBtn").onclick = () => {
     galleryPage.style.display = "block";
     showSimpleGallery();
 };
-document.getElementById("backBtn").onclick = () => galleryPage.style.display = "none";
+
 function showSimpleGallery(){
-     galleryList.innerHTML = "";
+    galleryList.innerHTML = "";
     let pastCreations = JSON.parse(localStorage.getItem("mySimpleStudio")) || [];
+    
     if (pastCreations.length === 0) {
-        galleryList.innerHTML = `<p style="color: #0d4d; font-weight:600;">Your gallery is empty!</p>`;
+        galleryList.innerHTML = `<p style="color: #004d4d; font-weight:600;">Your gallery is empty!</p>`;
         return;
     }
-}
-pastCreations.forEach((art,index)=>{
-    let entry = document.createElement("button");
+    pastCreations.forEach((art, index) => {
+        let entry = document.createElement("button");
         entry.style.width = "300px";
-        entry.innerText 'Artwork #{}'
-})
-</script>
+        entry.style.marginBottom = "5px";
+        entry.innerText = `Artwork#${index+1}`;
+  entry.onclick = () => {
+            document.getElementById("inputWidth").value = art.width;
+            document.getElementById("inputHeight").value = art.height;
+            sizePicker.click();
+            let mainCells = table.getElementsByTagName("td");
+            art.colors.forEach((color, i) => mainCells[i].style.backgroundColor = color);
+            galleryPage.style.display = "none";
+        };
+                         entry.oncontextmenu = (e) => { 
+                    e.preventDefault(); 
+                    pastCreations.splice(index, 1); 
+                    localStorage.setItem("mySimpleStudio", JSON.stringify(pastCreations)); 
+                    showSimpleGallery(); 
+                };
+
+            
+        galleryList.appendChild(entry);
+            });
+           
+        }                                                                                                                                                                                                                             //hi there
+         document.getElementById("backBtn").onclick = () => galleryPage.style.display = "none";
+        </script>
 </body>
 </html>
 
